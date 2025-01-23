@@ -6,15 +6,23 @@ public class ResumenHogar {
     private double sueldoHogar;
     private double gastoEquitativo;
     private double gastoIgualitario;
+    private int miembrosContribuyentes;
+    private int miembrosBeneficiarios;
+    private int totalDeMiembros;
     private List<ResumenSalidaPersona> detallePorPersona;
     private List<String> ajustesDeSaldos;
 
-    public ResumenHogar(double sueldoHogar, double gastoEquitativo, double gastoIgualitario, List<ResumenSalidaPersona> detallePorPersona, List<String> ajustesDeSaldos) {
+    public ResumenHogar(double sueldoHogar, double gastoEquitativo, double gastoIgualitario,
+                        List<ResumenSalidaPersona> detallePorPersona, List<String> ajustesDeSaldos,
+                        int miembrosContribuyentes, int miembrosBeneficiarios, int cantidadTotalDeMiembros) {
         this.sueldoHogar = sueldoHogar;
         this.gastoEquitativo = gastoEquitativo;
         this.gastoIgualitario = gastoIgualitario;
-        this.detallePorPersona = detallePorPersona;
+        this.totalDeMiembros = cantidadTotalDeMiembros;
+        this.miembrosContribuyentes = miembrosContribuyentes;
+        this.miembrosBeneficiarios = miembrosBeneficiarios;
         this.ajustesDeSaldos = ajustesDeSaldos;
+        this.detallePorPersona = detallePorPersona;
     }
 
     public double getSueldoHogar() {
@@ -55,5 +63,29 @@ public class ResumenHogar {
 
     public void setAjustesDeSaldos(List<String> ajustesDeSaldos) {
         this.ajustesDeSaldos = ajustesDeSaldos;
+    }
+
+    public int getMiembrosContribuyentes() {
+        return miembrosContribuyentes;
+    }
+
+    public void setMiembrosContribuyentes(int miembrosContribuyentes) {
+        this.miembrosContribuyentes = miembrosContribuyentes;
+    }
+
+    public int getMiembrosBeneficiarios() {
+        return miembrosBeneficiarios;
+    }
+
+    public void setMiembrosBeneficiarios(int miembrosBeneficiarios) {
+        this.miembrosBeneficiarios = miembrosBeneficiarios;
+    }
+
+    public int getTotalDeMiembros() {
+        return totalDeMiembros;
+    }
+
+    public void setTotalDeMiembros(int totalDeMiembros) {
+        this.totalDeMiembros = totalDeMiembros;
     }
 }

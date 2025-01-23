@@ -15,18 +15,24 @@ public class DistribuidorServiceImpl implements DistribuidorService {
     public ResumenHogar calcularResumenRapido(List<ResumenEntradaPersona> gastosPorPersona) {
 
         //Creamos unas variables para guardar datos del hogar
-        double gastoEquitativoHogar =  0, gastoIgualitarioHogar = 0;
+        double gastoEquitativoHogar = 0, gastoIgualitarioHogar = 0;
         List<String> ajustesDeSaldos = new ArrayList<>();
         List<ResumenSalidaPersona> resumenSalida = new ArrayList<>();
+        int miembrosContribuyentes = gastosPorPersona.size();
+        int miembrosBeneficiarios = 0;
+        int miembrosTotales = miembrosContribuyentes;
+
+
 
         //Lo primero seria calcular el sueldo total de cada Persona
-        for (ResumenEntradaPersona persona : gastosPorPersona){
+        for (ResumenEntradaPersona persona : gastosPorPersona) {
             //Creamos una persona
             ResumenSalidaPersona integrante = new ResumenSalidaPersona();
 
-            //Cargamos el nombre y sus ganancias de la persona
+            //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
             integrante.setNombre(persona.getNombre());
             integrante.setGanancias(persona.getGanancias());
+            integrante.setPersonasACargo(persona.getPersonasACargo());
 
             //Calculamos sueldo
             double sueldoTotal = Arrays.stream(integrante.getGanancias()).sum();
@@ -42,7 +48,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
         //En un for loop vamos a empezar a cargar los datos del resumen de salida, y aprovechamos el
         // loop para cargar algunos calculos
-        for (int i = 0; i < gastosPorPersona.size(); i++){
+        for (int i = 0; i < gastosPorPersona.size(); i++) {
 
             ResumenSalidaPersona persona = resumenSalida.get(i);  //atajo
 
@@ -51,7 +57,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
             persona.setPorcentajeCorrespondienteDelHogar(porcentajeCorrespondiente);
 
             //Variables para prox. calculos
-            double gasto1,gasto2;
+            double gasto1, gasto2;
 
             //Sumamos los gastos equitativos
             gasto1 = Arrays.stream(gastosPorPersona.get(i).getGastosEquitativosPagados()).sum();
@@ -71,35 +77,43 @@ public class DistribuidorServiceImpl implements DistribuidorService {
             persona.setGastoHogarTotal(persona.getGastoEquitativo() + persona.getGastoIgualitario());
 
             // Aprovechamos el loop para hallar gastos personales
-            for (ResumenEntradaPersona prestamista : gastosPorPersona)  {
-                if (prestamista.getGastosPersonalesDeOtros() != null){
-                for (Map.Entry<String, double[]> gasto : prestamista.getGastosPersonalesDeOtros().entrySet()){
-                    if (gasto.getValue() != null &&
-                            persona.getNombre() != null &&
-                            gasto.getKey().equals(persona.getNombre())){
+            for (ResumenEntradaPersona prestamista : gastosPorPersona) {
+                if (prestamista.getGastosPersonalesDeOtros() != null) {
+                    for (Map.Entry<String, double[]> gasto : prestamista.getGastosPersonalesDeOtros().entrySet()) {
+                        if (gasto.getValue() != null &&
+                                persona.getNombre() != null &&
+                                gasto.getKey().equals(persona.getNombre())) {
 
-                        //Agregamos al gasto personal
-                        double gastoPersonal = Arrays.stream(gasto.getValue()).sum();
-                        persona.setPrestamoTotal(persona.getPrestamoTotal() + gastoPersonal);
+                            //Agregamos al gasto personal
+                            double gastoPersonal = Arrays.stream(gasto.getValue()).sum();
+                            persona.setPrestamoRecibido(persona.getPrestamoRecibido() + gastoPersonal);
 
-                        //Agregamos el prestamo a quien presto
-                        for (ResumenSalidaPersona prestador : resumenSalida){
-                            if (prestador.getNombre().equals(prestamista.getNombre())){
-                                prestador.setGastoPrestamista(prestador.getGastoPrestamista() + gastoPersonal);
-                                prestador.getGastoPersonalDeOtros().put(persona.getNombre(), gastoPersonal);
+                            //Agregamos el prestamo a quien presto
+                            for (ResumenSalidaPersona prestador : resumenSalida) {
+                                if (prestador.getNombre().equals(prestamista.getNombre())) {
+                                    prestador.setGastoPrestamistaTotal(prestador.getGastoPrestamistaTotal() + gastoPersonal);
+                                    prestador.getGastoPersonalDeOtros().put(persona.getNombre(), gastoPersonal);
+                                }
                             }
                         }
                     }
-                    }
                 }
             }
+            // Aprovechamos el loop para contar la cantidad de miembros si alguno tiene personas a cargo
+            miembrosTotales += persona.getPersonasACargo();
         }
+        // Calculamos si hay beneficiarios
+        miembrosBeneficiarios = miembrosTotales - miembrosContribuyentes;
 
         //Lo que sigue es calcular la parte correspondiente total a cada persona,
         //para eso calculamos la parte igualitaria y la equitativa, correspondiente
-        double parteIgualitariaCorrespondiente = gastoIgualitarioHogar / resumenSalida.size();
+        for (ResumenSalidaPersona persona : resumenSalida) {
 
-        for (ResumenSalidaPersona persona : resumenSalida){
+
+            double parteIgualitariaCorrespondiente = (gastoIgualitarioHogar / miembrosTotales) *
+                    (1 + persona.getPersonasACargo());
+
+
             double parteEquitativaCorrespondiente =
                     gastoEquitativoHogar * (persona.getPorcentajeCorrespondienteDelHogar() / 100);
 
@@ -108,7 +122,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
             persona.setParteCorrespondienteTotal(parteIgualitariaCorrespondiente + parteEquitativaCorrespondiente);
 
             // De paso agregamos el gasto total
-            persona.setGastoTotal(persona.getGastoHogarTotal() + persona.getGastoPrestamista());
+            persona.setGastoTotal(persona.getGastoHogarTotal() + persona.getGastoPrestamistaTotal());
         }
 
         //Ahora calculamos quien le debe a quien. La idea es que todos terminen con un saldo en 0
@@ -117,7 +131,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         //Calculamos saldo actual
         for (ResumenSalidaPersona persona : resumenSalida) {
             double saldo = persona.getGastoTotal() - persona.getParteCorrespondienteTotal()
-                     - persona.getPrestamoTotal();
+                    - persona.getPrestamoRecibido();
             saldos.put(persona.getNombre(), saldo);
         }
 
@@ -138,19 +152,18 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
             // .min devuelve el menor de 2 valores, asi determinamos quien pone el limite en la transferencia
             // ajuste = es el valor que el deudor le pagara al cobrador
-            double ajuste = Math.min(cobrador.getValue(), - deudor.getValue());
+            double ajuste = Math.min(cobrador.getValue(), -deudor.getValue());
 
             // Registrar la transacción
             ajustesDeSaldos.add(deudor.getKey() + " debe pagar " + ajuste + " a " + cobrador.getKey());
 
-            for (int k = 0; k < resumenSalida.size(); k++){
+            for (int k = 0; k < resumenSalida.size(); k++) {
 
-                if (resumenSalida.get(k).getNombre().equals(deudor.getKey())){
+                if (resumenSalida.get(k).getNombre().equals(deudor.getKey())) {
                     resumenSalida.get(k).setEsDeudor(true);
                     resumenSalida.get(k).getDebeAODe().add(cobrador.getKey());
                     resumenSalida.get(k).getCantidadAPagarORecibir().add(ajuste);
-                }
-                else if (resumenSalida.get(k).getNombre().equals(cobrador.getKey())){
+                } else if (resumenSalida.get(k).getNombre().equals(cobrador.getKey())) {
                     resumenSalida.get(k).setEsDeudor(false);
                     resumenSalida.get(k).getDebeAODe().add(deudor.getKey());
                     resumenSalida.get(k).getCantidadAPagarORecibir().add(ajuste);
@@ -168,7 +181,8 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
         //Listo! Ahora si tenemos todo calculado, solo queda guardar los valores en una clase ResumenHogar
         ResumenHogar resumenHogareno = new ResumenHogar(sueldoHogar, gastoEquitativoHogar,
-                gastoIgualitarioHogar, resumenSalida, ajustesDeSaldos);
+                gastoIgualitarioHogar, resumenSalida, ajustesDeSaldos, miembrosContribuyentes,
+                miembrosBeneficiarios,miembrosTotales);
 
         return resumenHogareno;
     }

@@ -16,9 +16,9 @@ public class ResumenSalidaPersona extends Persona {
     private double parteIgualitariaCorrespondiente;
     private double parteCorrespondienteTotal;
 
-    private double prestamoTotal;
+    private double prestamoRecibido;
     private HashMap<String, Double> gastoPersonalDeOtros;
-    private double gastoPrestamista;
+    private double gastoPrestamistaTotal;
 
     private double gastoTotal;
 
@@ -32,8 +32,8 @@ public class ResumenSalidaPersona extends Persona {
         this.cantidadAPagarORecibir = new ArrayList<>();
         this.debeAODe = new ArrayList<>();
         this.gastoPersonalDeOtros = new HashMap<String, Double>();
-        this.prestamoTotal = 0;
-        this.gastoPrestamista = 0;
+        this.prestamoRecibido = 0;
+        this.gastoPrestamistaTotal = 0;
     }
 
     public double getSueldoTotal() {
@@ -124,12 +124,12 @@ public class ResumenSalidaPersona extends Persona {
         this.cantidadAPagarORecibir = cantidadAPagarORecibir;
     }
 
-    public double getPrestamoTotal() {
-        return prestamoTotal;
+    public double getPrestamoRecibido() {
+        return prestamoRecibido;
     }
 
-    public void setPrestamoTotal(double prestamoTotal) {
-        this.prestamoTotal = prestamoTotal;
+    public void setPrestamoRecibido(double prestamoRecibido) {
+        this.prestamoRecibido = prestamoRecibido;
     }
     public HashMap<String, Double> getGastoPersonalDeOtros() {
         return gastoPersonalDeOtros;
@@ -139,12 +139,12 @@ public class ResumenSalidaPersona extends Persona {
         this.gastoPersonalDeOtros = gastoPersonalDeOtros;
     }
 
-    public double getGastoPrestamista() {
-        return gastoPrestamista;
+    public double getGastoPrestamistaTotal() {
+        return gastoPrestamistaTotal;
     }
 
-    public void setGastoPrestamista(double gastoPrestamista) {
-        this.gastoPrestamista = gastoPrestamista;
+    public void setGastoPrestamistaTotal(double gastoPrestamistaTotal) {
+        this.gastoPrestamistaTotal = gastoPrestamistaTotal;
     }
 
     public double getGastoTotal() {
