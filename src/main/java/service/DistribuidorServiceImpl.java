@@ -1,8 +1,8 @@
 package service;
 
-import model.ResumenEntradaPersona;
+import model.DatosDeEntradaPersona;
 import model.ResumenHogar;
-import model.ResumenSalidaPersona;
+import model.DatosDeSalidaPersona;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,14 +10,14 @@ import java.util.*;
 @Service
 public class DistribuidorServiceImpl implements DistribuidorService {
 
-    //Este metodo hace los calculos para obtener un resumen con division de gastos
+
     @Override
-    public ResumenHogar calcularResumenRapido(List<ResumenEntradaPersona> gastosPorPersona) {
+    public ResumenHogar calcularDistribucionDeGastosEntreMiembrosDelHogar(List<DatosDeEntradaPersona> gastosPorPersona) {
 
         //Creamos unas variables para guardar datos del hogar
         double gastoEquitativoHogar = 0, gastoIgualitarioHogar = 0;
         List<String> ajustesDeSaldos = new ArrayList<>();
-        List<ResumenSalidaPersona> resumenSalida = new ArrayList<>();
+        List<DatosDeSalidaPersona> resumenSalida = new ArrayList<>();
         int miembrosContribuyentes = gastosPorPersona.size();
         int miembrosBeneficiarios = 0;
         int miembrosTotales = miembrosContribuyentes;
@@ -25,9 +25,9 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
 
         //Lo primero seria calcular el sueldo total de cada Persona
-        for (ResumenEntradaPersona persona : gastosPorPersona) {
+        for (DatosDeEntradaPersona persona : gastosPorPersona) {
             //Creamos una persona
-            ResumenSalidaPersona integrante = new ResumenSalidaPersona();
+            DatosDeSalidaPersona integrante = new DatosDeSalidaPersona();
 
             //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
             integrante.setNombre(persona.getNombre());
@@ -44,13 +44,13 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
         //Ahora hay que encontrar cual es el sueldo o ingreso del hogar,
         double sueldoHogar = resumenSalida.stream()
-                .mapToDouble(ResumenSalidaPersona::getSueldoTotal).sum();
+                .mapToDouble(DatosDeSalidaPersona::getSueldoTotal).sum();
 
         //En un for loop vamos a empezar a cargar los datos del resumen de salida, y aprovechamos el
         // loop para cargar algunos calculos
         for (int i = 0; i < gastosPorPersona.size(); i++) {
 
-            ResumenSalidaPersona persona = resumenSalida.get(i);  //atajo
+            DatosDeSalidaPersona persona = resumenSalida.get(i);  //atajo
 
             //Calculamos su porcentaje correspondiente
             double porcentajeCorrespondiente = (persona.getSueldoTotal() * 100) / sueldoHogar;
@@ -61,14 +61,21 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
             //Sumamos los gastos equitativos
             gasto1 = Arrays.stream(gastosPorPersona.get(i).getGastosEquitativosPagados()).sum();
-            gasto2 = Arrays.stream(gastosPorPersona.get(i).getGastosEquitativosPendientes()).sum();
+
+            //gasto2 = Arrays.stream(gastosPorPersona.get(i).getGastosEquitativosPendientes()).sum();
+            gasto2 = Optional.ofNullable(gastosPorPersona.get(i).getGastosEquitativosPendientes())
+                    .map(arr -> Arrays.stream(arr).sum())
+                    .orElse(0.0);
             persona.setGastoEquitativo(gasto1 + gasto2);
 
             gastoEquitativoHogar += gasto1 + gasto2;  //Aprovechamos el loop y vamos calculando los gastos del hogar
 
             //Sumamos los gastos igualitarios
             gasto1 = Arrays.stream(gastosPorPersona.get(i).getGastosIgualitariosPagados()).sum();
-            gasto2 = Arrays.stream(gastosPorPersona.get(i).getGastosIgualitariosPendientes()).sum();
+            //gasto2 = Arrays.stream(gastosPorPersona.get(i).getGastosIgualitariosPendientes()).sum();
+            gasto2 = Optional.ofNullable(gastosPorPersona.get(i).getGastosIgualitariosPendientes())
+                    .map(arr -> Arrays.stream(arr).sum())
+                    .orElse(0.0);
             persona.setGastoIgualitario(gasto1 + gasto2);
 
             gastoIgualitarioHogar += gasto1 + gasto2; //Aca lo mismo
@@ -77,7 +84,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
             persona.setGastoHogarTotal(persona.getGastoEquitativo() + persona.getGastoIgualitario());
 
             // Aprovechamos el loop para hallar gastos personales
-            for (ResumenEntradaPersona prestamista : gastosPorPersona) {
+            for (DatosDeEntradaPersona prestamista : gastosPorPersona) {
                 if (prestamista.getGastosPersonalesDeOtros() != null) {
                     for (Map.Entry<String, double[]> gasto : prestamista.getGastosPersonalesDeOtros().entrySet()) {
                         if (gasto.getValue() != null &&
@@ -89,7 +96,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
                             persona.setPrestamoRecibido(persona.getPrestamoRecibido() + gastoPersonal);
 
                             //Agregamos el prestamo a quien presto
-                            for (ResumenSalidaPersona prestador : resumenSalida) {
+                            for (DatosDeSalidaPersona prestador : resumenSalida) {
                                 if (prestador.getNombre().equals(prestamista.getNombre())) {
                                     prestador.setGastoPrestamistaTotal(prestador.getGastoPrestamistaTotal() + gastoPersonal);
                                     prestador.getGastoPersonalDeOtros().put(persona.getNombre(), gastoPersonal);
@@ -107,7 +114,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
 
         //Lo que sigue es calcular la parte correspondiente total a cada persona,
         //para eso calculamos la parte igualitaria y la equitativa, correspondiente
-        for (ResumenSalidaPersona persona : resumenSalida) {
+        for (DatosDeSalidaPersona persona : resumenSalida) {
 
 
             double parteIgualitariaCorrespondiente = (gastoIgualitarioHogar / miembrosTotales) *
@@ -129,7 +136,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         Map<String, Double> saldos = new HashMap<>();
 
         //Calculamos saldo actual
-        for (ResumenSalidaPersona persona : resumenSalida) {
+        for (DatosDeSalidaPersona persona : resumenSalida) {
             double saldo = persona.getGastoTotal() - persona.getParteCorrespondienteTotal()
                     - persona.getPrestamoRecibido();
             saldos.put(persona.getNombre(), saldo);

@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ResumenSalidaPersona extends Persona {
+public class DatosDeSalidaPersona extends Persona {
 
     private double sueldoTotal;
     private double porcentajeCorrespondienteDelHogar;
@@ -27,7 +27,7 @@ public class ResumenSalidaPersona extends Persona {
     private ArrayList<String> debeAODe;
     private ArrayList<Double> cantidadAPagarORecibir;
 
-    public ResumenSalidaPersona() {
+    public DatosDeSalidaPersona() {
         super();
         this.cantidadAPagarORecibir = new ArrayList<>();
         this.debeAODe = new ArrayList<>();

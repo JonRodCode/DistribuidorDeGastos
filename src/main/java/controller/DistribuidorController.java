@@ -1,6 +1,6 @@
 package controller;
 
-import model.ResumenEntradaPersona;
+import model.DatosDeEntradaPersona;
 import model.ResumenHogar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +22,8 @@ public class DistribuidorController {
     DistribuidorService service;
 
     @PostMapping(value="resumen", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResumenHogar> calcularResumen(@RequestBody List<ResumenEntradaPersona> resumenEntrada) {
-        ResumenHogar hogar = service.calcularResumenRapido(resumenEntrada);
+    public ResponseEntity<ResumenHogar> calcularResumen(@RequestBody List<DatosDeEntradaPersona> resumenEntrada) {
+        ResumenHogar hogar = service.calcularDistribucionDeGastosEntreMiembrosDelHogar(resumenEntrada);
         return new ResponseEntity<ResumenHogar>(hogar, HttpStatus.OK);
     }
 }

@@ -2,14 +2,14 @@ package model;
 
 import java.util.HashMap;
 
-public class ResumenEntradaPersona extends Persona{
+public class DatosDeEntradaPersona extends Persona{
     private double[] gastosEquitativosPagados;
     private double[] gastosEquitativosPendientes;
     private double[] gastosIgualitariosPagados;
     private double[] gastosIgualitariosPendientes;
     private HashMap<String, double[]> gastosPersonalesDeOtros;
 
-    public ResumenEntradaPersona() {
+    public DatosDeEntradaPersona() {
         super();
 
     }

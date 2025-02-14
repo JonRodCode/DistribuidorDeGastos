@@ -9,11 +9,11 @@ public class ResumenHogar {
     private int miembrosContribuyentes;
     private int miembrosBeneficiarios;
     private int totalDeMiembros;
-    private List<ResumenSalidaPersona> detallePorPersona;
+    private List<DatosDeSalidaPersona> detallePorPersona;
     private List<String> ajustesDeSaldos;
 
     public ResumenHogar(double sueldoHogar, double gastoEquitativo, double gastoIgualitario,
-                        List<ResumenSalidaPersona> detallePorPersona, List<String> ajustesDeSaldos,
+                        List<DatosDeSalidaPersona> detallePorPersona, List<String> ajustesDeSaldos,
                         int miembrosContribuyentes, int miembrosBeneficiarios, int cantidadTotalDeMiembros) {
         this.sueldoHogar = sueldoHogar;
         this.gastoEquitativo = gastoEquitativo;
@@ -49,11 +49,11 @@ public class ResumenHogar {
         this.gastoIgualitario = gastoIgualitario;
     }
 
-    public List<ResumenSalidaPersona> getDetallePorPersona() {
+    public List<DatosDeSalidaPersona> getDetallePorPersona() {
         return detallePorPersona;
     }
 
-    public void setDetallePorPersona(List<ResumenSalidaPersona> detallePorPersona) {
+    public void setDetallePorPersona(List<DatosDeSalidaPersona> detallePorPersona) {
         this.detallePorPersona = detallePorPersona;
     }
 
