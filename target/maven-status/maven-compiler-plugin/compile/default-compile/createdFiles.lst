@@ -1,0 +1,8 @@
+service\DistribuidorService.class
+model\Persona.class
+model\ResumenHogar.class
+controller\DistribuidorController.class
+model\DatosDeEntradaPersona.class
+service\DistribuidorServiceImpl.class
+DistribuidorDeGastos\DistribuidorDeGastosApplication.class
+model\DatosDeSalidaPersona.class
