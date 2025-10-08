@@ -22,25 +22,7 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         int miembrosBeneficiarios = 0;
         int miembrosTotales = miembrosContribuyentes;
 
-
-
-        //Lo primero seria calcular el sueldo total de cada Persona
-        for (DatosDeEntradaPersona persona : gastosPorPersona) {
-            //Creamos una persona
-            DatosDeSalidaPersona integrante = new DatosDeSalidaPersona();
-
-            //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
-            integrante.setNombre(persona.getNombre());
-            integrante.setGanancias(persona.getGanancias());
-            integrante.setPersonasACargo(persona.getPersonasACargo());
-
-            //Calculamos sueldo
-            double sueldoTotal = Arrays.stream(integrante.getGanancias()).sum();
-            integrante.setSueldoTotal(sueldoTotal);
-
-            //Agregamos la persona a la lista
-            resumenSalida.add(integrante);
-        }
+        inicializarDatosDeSalida(resumenSalida, gastosPorPersona);
 
         //Ahora hay que encontrar cual es el sueldo o ingreso del hogar,
         double sueldoHogar = resumenSalida.stream()
@@ -194,5 +176,26 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         return resumenHogareno;
     }
 
+    private DatosDeSalidaPersona copiarDatosBasicosDeEntradaASalida(DatosDeEntradaPersona persona){
+        DatosDeSalidaPersona integrante = new DatosDeSalidaPersona();
+        //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
+        integrante.setNombre(persona.getNombre());
+        integrante.setGanancias(persona.getGanancias());
+        integrante.setPersonasACargo(persona.getPersonasACargo());
+        return integrante;
+    }
 
+    private void calcularSueldoTotal(DatosDeSalidaPersona integrante) {
+        double sueldoTotal = Arrays.stream(integrante.getGanancias()).sum();
+        integrante.setSueldoTotal(sueldoTotal);
+    }
+
+    private void inicializarDatosDeSalida(List<DatosDeSalidaPersona> resumenSalida, List<DatosDeEntradaPersona> gastosPorPersona) {
+        //2 procesos: copiar datos básicos y calcular sueldo total
+        for (DatosDeEntradaPersona persona : gastosPorPersona) {
+            DatosDeSalidaPersona integrante = copiarDatosBasicosDeEntradaASalida(persona);
+            calcularSueldoTotal(integrante);
+            resumenSalida.add(integrante);
+        }
+    }
 }
