@@ -7,17 +7,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 @SpringBootTest
 class DistribuidorDeGastosApplicationTests {
 
-	DatosDeEntradaPersona datosDeEntradaPersona;
+	List<DatosDeEntradaPersona> gastosPorPersona;
 	DatosDeSalidaPersona datosDeSalidaPersona;
 
 	@Before
 	public void setUp() {
-		datosDeEntradaPersona = new DatosDeEntradaPersona();
+		gastosPorPersona = new ArrayList<>();
 		datosDeSalidaPersona = new DatosDeSalidaPersona();
 	}
 
@@ -26,5 +29,4 @@ class DistribuidorDeGastosApplicationTests {
 
 
 	}
-
 }
