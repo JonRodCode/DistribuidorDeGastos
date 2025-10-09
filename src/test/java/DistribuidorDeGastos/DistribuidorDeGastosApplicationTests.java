@@ -27,6 +27,11 @@ class DistribuidorDeGastosApplicationTests {
 	@Test
 	void calcularDistribucionDeGastosEntreMiembrosDelHogarTests() {
 
+		List<DatosDeEntradaPersona> gastosPorPersona = new ArrayList<>();
+		DatosDeEntradaPersona datosDePersona1 = new DatosDeEntradaPersona();
+		datosDePersona1.setNombre("Pedro");
+		datosDePersona1.setGanancias(new double[] {25.0,5.2});
+
 
 	}
 }
