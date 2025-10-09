@@ -22,7 +22,9 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         int miembrosBeneficiarios = 0;
         int miembrosTotales = miembrosContribuyentes;
 
-        inicializarDatosDeSalida(resumenSalida, gastosPorPersona);
+
+        copiarDatosBasicosDeEntradaASalida(resumenSalida, gastosPorPersona);
+        setearSueldoACadaIntegrante(resumenSalida);
 
         //Ahora hay que encontrar cual es el sueldo o ingreso del hogar,
         double sueldoHogar = resumenSalida.stream()
@@ -176,13 +178,16 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         return resumenHogareno;
     }
 
-    private DatosDeSalidaPersona copiarDatosBasicosDeEntradaASalida(DatosDeEntradaPersona persona){
-        DatosDeSalidaPersona integrante = new DatosDeSalidaPersona();
-        //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
-        integrante.setNombre(persona.getNombre());
-        integrante.setGanancias(persona.getGanancias());
-        integrante.setPersonasACargo(persona.getPersonasACargo());
-        return integrante;
+    private void copiarDatosBasicosDeEntradaASalida(List<DatosDeSalidaPersona> resumenSalida, List<DatosDeEntradaPersona> gastosPorPersona){
+
+        for (DatosDeEntradaPersona persona : gastosPorPersona) {
+            DatosDeSalidaPersona integrante = new DatosDeSalidaPersona();
+            //Cargamos el nombre, las ganancias de la persona, y su cantidad de personas a cargo
+            integrante.setNombre(persona.getNombre());
+            integrante.setGanancias(persona.getGanancias());
+            integrante.setPersonasACargo(persona.getPersonasACargo());
+            resumenSalida.add(integrante);
+        }
     }
 
     private void calcularSueldoTotal(DatosDeSalidaPersona integrante) {
@@ -190,12 +195,10 @@ public class DistribuidorServiceImpl implements DistribuidorService {
         integrante.setSueldoTotal(sueldoTotal);
     }
 
-    private void inicializarDatosDeSalida(List<DatosDeSalidaPersona> resumenSalida, List<DatosDeEntradaPersona> gastosPorPersona) {
+    private void setearSueldoACadaIntegrante(List<DatosDeSalidaPersona> resumenSalida) {
         //2 procesos: copiar datos básicos y calcular sueldo total
-        for (DatosDeEntradaPersona persona : gastosPorPersona) {
-            DatosDeSalidaPersona integrante = copiarDatosBasicosDeEntradaASalida(persona);
+        for (DatosDeSalidaPersona integrante : resumenSalida) {
             calcularSueldoTotal(integrante);
-            resumenSalida.add(integrante);
         }
     }
 }
