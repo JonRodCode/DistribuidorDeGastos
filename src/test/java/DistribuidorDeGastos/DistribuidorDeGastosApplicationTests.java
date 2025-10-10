@@ -30,7 +30,7 @@ class DistribuidorDeGastosApplicationTests {
 
 		List<DatosDeEntradaPersona> gastosPorPersona = new ArrayList<>();
 		DatosDeEntradaPersona datosDePersona1 = new DatosDeEntradaPersona();
-		datosDePersona1.setNombre("Pedro");
+		datosDePersona1.setNombre("persona1");
 		datosDePersona1.setGanancias(new double[] {25.0,5.2});
 		datosDePersona1.setPersonasACargo(0);
 
@@ -40,7 +40,7 @@ class DistribuidorDeGastosApplicationTests {
 		datosDePersona1.setGastosIgualitariosPendientes(new double[]{21.2,5.0});
 
 		datosDePersona1.setGastosPersonalesDeOtros(new HashMap<String, double[]>(){{
-			put("Hola", new double[]{22.2});
+			put("persona2", new double[]{22.2});
 
 		}});
 		//private HashMap<String, double[]> gastosPersonalesDeOtros;
