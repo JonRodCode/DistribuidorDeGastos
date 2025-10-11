@@ -3,6 +3,7 @@ package DistribuidorDeGastos;
 import model.DatosDeEntradaPersona;
 import model.DatosDeSalidaPersona;
 import model.ResumenHogar;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,17 +13,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import service.DistribuidorService;
+import service.DistribuidorServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class DistribuidorDeGastosApplicationTests {
 
+	@Autowired
 	DistribuidorService distribuidorService;
 
 	List<DatosDeEntradaPersona> gastosPorPersona;
@@ -32,17 +34,21 @@ class DistribuidorDeGastosApplicationTests {
 	public void setUp() {
 		gastosPorPersona = new ArrayList<>();
 		datosDeSalidaPersona = new DatosDeSalidaPersona();
+		distribuidorService = new DistribuidorServiceImpl();
 	}
 
 	@ParameterizedTest
 	@MethodSource("cargarDatosDePrueba")
-	void calcularDistribucionDeGastosEntreMiembrosDelHogarTests(List<DatosDeEntradaPersona> gastosPorPersona) {
+	void calcularDistribucionDeGastosEntreMiembrosDelHogarTests(List<DatosDeEntradaPersona> gastosPorPersona, ResumenHogar resumenHogar) {
 
-		ResumenHogar resumen = distribuidorService.calcularDistribucionDeGastosEntreMiembrosDelHogar(gastosPorPersona);
+		ResumenHogar resumenCalculado = distribuidorService.calcularDistribucionDeGastosEntreMiembrosDelHogar(gastosPorPersona);
 
-		List<DatosDeSalidaPersona> datosDeSalida = resumen.getDetallePorPersona();
-
-
+		assertEquals(resumenCalculado.getSueldoHogar(),resumenHogar.getSueldoHogar());
+		assertEquals(resumenCalculado.getGastoEquitativo(), resumenHogar.getGastoEquitativo());
+		assertEquals(resumenCalculado.getGastoIgualitario(), resumenHogar.getGastoIgualitario());
+		assertEquals(resumenCalculado.getMiembrosContribuyentes(), resumenHogar.getMiembrosContribuyentes());
+		assertEquals(resumenCalculado.getMiembrosBeneficiarios(), resumenHogar.getMiembrosBeneficiarios());
+		assertEquals(resumenCalculado.getTotalDeMiembros(), resumenHogar.getTotalDeMiembros());
 	}
 
 	private static Stream<Arguments> cargarDatosDePrueba(){
@@ -51,14 +57,14 @@ class DistribuidorDeGastosApplicationTests {
 		DatosDeEntradaPersona persona2;
 
 		String nombreDePersona1 = "Persona1";
-		double[] gananciasDePersona1 = new double[] {25.0};
+		double[] gananciasDePersona1 = new double[] {732262.0};
 		int personasACargoDePersona1 = 0;
-		double[] gastosEquitativosPagados1 = new double[]{};
-		double[] gastosEquitativosPendientes1 = new double[]{};
+		double[] gastosEquitativosPagados1 = new double[]{145400.0};
+		double[] gastosEquitativosPendientes1 = new double[]{8415.0,28018.0,95604.0};
 		double[] gastosIgualitariosPagados1 = new double[]{};
-		double[] gastosIgualitariosPendientes1 = new double[]{};
+		double[] gastosIgualitariosPendientes1 = new double[]{19166,4145,5416,24570,44133,6164,6498,11161,15778,6715,19072,4838,13400,18400};
 		HashMap<String, double[]> gastosPersonalesDeOtros1 = new HashMap<>(){{
-			put("", new double[]{22.2});
+			put("Persona2", new double[]{19973.0,8250.0});
 		}};
 		persona1 = new DatosDeEntradaPersona(nombreDePersona1,gananciasDePersona1,
 				personasACargoDePersona1, gastosEquitativosPagados1, gastosEquitativosPendientes1,
@@ -66,14 +72,14 @@ class DistribuidorDeGastosApplicationTests {
 				);
 
 		String nombreDePersona2 = "Persona2";
-		double[] gananciasDePersona2 = new double[] {25.0};
+		double[] gananciasDePersona2 = new double[] {475650.0, 400000};
 		int personasACargoDePersona2 = 0;
-		double[] gastosEquitativosPagados2 = new double[]{};
+		double[] gastosEquitativosPagados2 = new double[]{162626.0};
 		double[] gastosEquitativosPendientes2 = new double[]{};
 		double[] gastosIgualitariosPagados2 = new double[]{};
 		double[] gastosIgualitariosPendientes2 = new double[]{};
 		HashMap<String, double[]> gastosPersonalesDeOtros2 = new HashMap<>(){{
-			put("", new double[]{22.2});
+			put("Persona1", new double[]{31699.0});
 		}};
 		persona2 = new DatosDeEntradaPersona(nombreDePersona2,gananciasDePersona2,
 				personasACargoDePersona2, gastosEquitativosPagados2, gastosEquitativosPendientes2,
@@ -84,8 +90,15 @@ class DistribuidorDeGastosApplicationTests {
 		gastosPorPersona.add(persona1);
 		gastosPorPersona.add(persona2);
 
+		List<DatosDeSalidaPersona> resumenSalida = new ArrayList<>();
+		List<String> ajustesDeSaldos = new ArrayList<>();
+
+		ResumenHogar resumenHogar = new ResumenHogar(1607912.0, 440063.0,
+				199456.0, resumenSalida, ajustesDeSaldos, 2,
+				0,2);
+
 		return Stream.of(
-				Arguments.of(gastosPorPersona)
+				Arguments.of(gastosPorPersona, resumenHogar)
 		);
 	};
 }
