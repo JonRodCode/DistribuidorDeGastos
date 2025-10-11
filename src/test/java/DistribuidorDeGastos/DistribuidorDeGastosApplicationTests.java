@@ -39,16 +39,31 @@ class DistribuidorDeGastosApplicationTests {
 
 	@ParameterizedTest
 	@MethodSource("cargarDatosDePrueba")
-	void calcularDistribucionDeGastosEntreMiembrosDelHogarTests(List<DatosDeEntradaPersona> gastosPorPersona, ResumenHogar resumenHogar) {
+	void calcularDistribucionDeGastosEntreMiembrosDelHogarTests(List<DatosDeEntradaPersona> gastosPorPersona, ResumenHogar resumenValido) {
 
 		ResumenHogar resumenCalculado = distribuidorService.calcularDistribucionDeGastosEntreMiembrosDelHogar(gastosPorPersona);
 
-		assertEquals(resumenCalculado.getSueldoHogar(),resumenHogar.getSueldoHogar());
-		assertEquals(resumenCalculado.getGastoEquitativo(), resumenHogar.getGastoEquitativo());
-		assertEquals(resumenCalculado.getGastoIgualitario(), resumenHogar.getGastoIgualitario());
-		assertEquals(resumenCalculado.getMiembrosContribuyentes(), resumenHogar.getMiembrosContribuyentes());
-		assertEquals(resumenCalculado.getMiembrosBeneficiarios(), resumenHogar.getMiembrosBeneficiarios());
-		assertEquals(resumenCalculado.getTotalDeMiembros(), resumenHogar.getTotalDeMiembros());
+		assertEquals(resumenCalculado.getSueldoHogar(),resumenValido.getSueldoHogar());
+		assertEquals(resumenCalculado.getGastoEquitativo(), resumenValido.getGastoEquitativo());
+		assertEquals(resumenCalculado.getGastoIgualitario(), resumenValido.getGastoIgualitario());
+		assertEquals(resumenCalculado.getMiembrosContribuyentes(), resumenValido.getMiembrosContribuyentes());
+		assertEquals(resumenCalculado.getMiembrosBeneficiarios(), resumenValido.getMiembrosBeneficiarios());
+		assertEquals(resumenCalculado.getTotalDeMiembros(), resumenValido.getTotalDeMiembros());
+		verificarAjustesDeSaldo(resumenCalculado.getAjustesDeSaldos(), resumenValido.getAjustesDeSaldos());
+		verificarDetalleDeSalida(resumenCalculado.getDetallePorPersona(), resumenValido.getDetallePorPersona());
+	}
+
+	void verificarAjustesDeSaldo(List<String> ajusteCalculado, List<String> ajusteValido){
+		assertEquals(ajusteCalculado.size(), ajusteValido.size());
+		for (int i = 0; i < ajusteCalculado.size(); i++){
+			assertEquals(ajusteCalculado.get(i), ajusteValido.get(i));
+		}
+	}
+
+	void verificarDetalleDeSalida(List<DatosDeSalidaPersona> detalleCalculado, List<DatosDeSalidaPersona> detalleValido){
+
+		assertEquals(0,1);
+
 	}
 
 	private static Stream<Arguments> cargarDatosDePrueba(){
@@ -91,7 +106,9 @@ class DistribuidorDeGastosApplicationTests {
 		gastosPorPersona.add(persona2);
 
 		List<DatosDeSalidaPersona> resumenSalida = new ArrayList<>();
-		List<String> ajustesDeSaldos = new ArrayList<>();
+		List<String> ajustesDeSaldos = new ArrayList<>(){{
+			add("Persona2 debe pagar 173279.14392205537 a Persona1");
+		}};
 
 		ResumenHogar resumenHogar = new ResumenHogar(1607912.0, 440063.0,
 				199456.0, resumenSalida, ajustesDeSaldos, 2,
