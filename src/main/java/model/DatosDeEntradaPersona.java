@@ -11,7 +11,20 @@ public class DatosDeEntradaPersona extends Persona{
 
     public DatosDeEntradaPersona() {
         super();
-
+    }
+    public DatosDeEntradaPersona(String nombre, double[] ganancias, int personasACargo) {
+        super(nombre, ganancias, personasACargo);
+    }
+    public DatosDeEntradaPersona(String nombre, double[] ganancias, int personasACargo,
+                                 double[] gastosEquitativosPagados, double[] gastosEquitativosPendientes,
+                                 double[] gastosIgualitariosPagados, double[] gastosIgualitariosPendientes,
+                                 HashMap<String, double[]> gastosPersonalesDeOtros) {
+        super(nombre, ganancias, personasACargo);
+        this.gastosEquitativosPagados = gastosEquitativosPagados;
+        this.gastosEquitativosPendientes = gastosEquitativosPendientes;
+        this.gastosIgualitariosPagados = gastosIgualitariosPagados;
+        this.gastosIgualitariosPendientes = gastosIgualitariosPendientes;
+        this.gastosPersonalesDeOtros = gastosPersonalesDeOtros;
     }
 
     public double[] getGastosEquitativosPagados() {

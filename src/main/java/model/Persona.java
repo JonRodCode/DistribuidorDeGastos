@@ -5,7 +5,12 @@ public abstract class Persona {
     private double[] ganancias;
     private int personasACargo;
 
-    public Persona() {
+    public Persona(){}
+
+    public Persona(String nombre, double[] ganancias, int personasACargo) {
+        this.nombre = nombre;
+        this.ganancias = ganancias;
+        this.personasACargo = personasACargo;
     }
 
     public String getNombre() {
