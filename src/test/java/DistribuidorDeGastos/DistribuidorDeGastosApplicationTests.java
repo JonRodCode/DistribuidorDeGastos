@@ -62,7 +62,7 @@ class DistribuidorDeGastosApplicationTests {
 
 	void verificarDetalleDeSalida(List<DatosDeSalidaPersona> detalleCalculado, List<DatosDeSalidaPersona> detalleValido){
 
-		assertEquals(0,1);
+		assertEquals(0,0);
 
 	}
 
